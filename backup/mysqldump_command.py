@@ -54,7 +54,8 @@ class MysqlDumpCommand(object):
             result.error_cause = e.strerror
             return result
     
-        
+    
+        # Execute command :
         result.result_code  = subprocess.call(cmd_args)
         result.command = ' '.join(cmd_args)
         
