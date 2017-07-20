@@ -60,7 +60,12 @@ class MysqlDumpCommand(object):
         
         if result.result_code != 0:
             result.has_error = True
-            result.error_cause = self.get_mysqldump_error_cause(result.result_code, command_args)   
+            result.error_cause = self.get_mysqldump_error_cause(result.result_code, command_args)
+            
+            # Sometime, when the command failed, an empty dump file is created.
+            # If so, we need to delete this unused file.
+            if os.path.isfile(file_path) :
+                os.remove(file_path)            
             
         return result
     
