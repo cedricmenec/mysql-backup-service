@@ -2,12 +2,10 @@ from app import app
 from flask import jsonify
 
 from backup.api import api as api_backup
-from backup.api import api_restore
 
 
 # Blueprints registration
 app.register_blueprint(api_backup, url_prefix='/api/backup')
-app.register_blueprint(api_restore, url_prefix='/api/restore')
 
 
 @app.route('/api/help', methods = ['GET'])

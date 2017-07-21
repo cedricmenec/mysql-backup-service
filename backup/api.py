@@ -7,30 +7,14 @@ from backup.schemas.mysqldump_command_result_schema import MysqlDumpCommandResul
 import backup.services as services
 
 api = Blueprint('api.backup',  __name__)
-api_restore = Blueprint('api.restore',  __name__)
+
 
 @api.route('/', methods=['POST'])    
 def create_backup():
-    """
-    Create a database backup.
-    """
+    """Create a database backup."""
     data = request.get_json()
     cmd_result = services.create_backup(**data)
     
     schema = MysqlDumpCommandResultShema()
     result = schema.dump(cmd_result)
     return jsonify(result.data)
-
-
-@api_restore.route('/', methods=['POST'])
-def restore_backup():
-    """
-    """
-    
-    data = request.get_json()
-    cmd_result = services.restore_backup(**data)
-    
-    schema = MysqlDumpCommandResultShema()
-    result = schema.dump(cmd_result)
-    return jsonify(result)
-    
