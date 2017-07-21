@@ -8,6 +8,5 @@ install:
 
 # command to run tests
 script:
-    - pwd
-    - PYTHONPATH=`pwd`
+    - export PYTHONPATH=`pwd`
     - pytest
