@@ -3,6 +3,7 @@ import os
 
 from datetime import datetime
 
+from commons.commands import ExecutableCommand
 from backup.mysqldump_command_result import MysqlDumpCommandResult
 
 
@@ -21,7 +22,7 @@ class MysqlDumpCommand(object):
         pass
     
     
-    def execute(self, user = None, password = None, database = None, output_path = None, **kwargs):
+    def execute(self, user = None, password = None, database = None, output_path = None):
         """        
         Raises ValueError exception if required argument is missing.
         """            
@@ -149,3 +150,71 @@ class MysqlDumpCommand(object):
         return cmd_args
     
     
+    
+class RestoreDatabaseCommand(ExecutableCommand):
+    """
+    """
+    
+    # TODO: Externalize these paths
+    binary_directory_path = '/usr/bin'
+    binary_filename = 'mysql'
+    dump_directory_path = "/tmp/"
+    
+    def __init__(self):
+        self.binary_path = os.path.join(self.binary_directory_path, self.binary_filename)    
+    
+    
+    def execute(self, **args):
+        
+        # Build the command for subprocess call
+        cmd = self.build_command_aguments(args)
+        
+        command_result = MysqlDumpCommandResult()
+        
+        if args.get("dump") is None:
+            command_result.has_error = True
+            command_result.error_cause = "Required argument 'dump' is missing"
+            return command_result
+        
+        dump_path = os.path.join(self.dump_directory_path, args.get("dump"))
+        if not os.path.isfile(dump_path):
+            command_result.error_cause = "Dump file does not exist : '{}'".format(dump_path)
+            command_result.has_error = True
+            return command_result
+        
+        # Open the dump file and pass it to input
+        # It is like piping the input  : mysql [options] database < file.dmp
+        f = open(dump_path,  'rb')
+        try:
+            command_result.result_code = subprocess.call(cmd, stdin=f)
+        finally:
+            f.close()
+        
+        return command_result
+    
+        
+        
+        
+    def build_command_aguments(self, args):
+        args_list = []
+        self.validate_arguments(args)
+        args_list.append(self.binary_path)
+        args_list.append("--user={}".format(args.get("user")))
+        args_list.append("--password={}".format(args.get("password")))
+        args_list.append("--protocol=tcp")
+        args_list.append(args.get("database"))
+        return args_list
+    
+    
+    def validate_arguments(self, args):
+        """
+        """
+        
+        if args.get("user") is None:
+            raise ValueError("Missing required argument: 'user'")
+        if args.get("password") is None:
+            raise ValueError("Missing required argument: 'password'")
+        if args.get("dump") is None:
+            raise ValueError("Missing required argument: 'dump_file'")
+        if args.get("database") is None:
+            raise ValueError("Missing required argument: 'database'")

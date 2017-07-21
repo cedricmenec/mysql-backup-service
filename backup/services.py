@@ -2,7 +2,7 @@ from datetime import datetime
 import subprocess
 import os
 
-from backup.mysqldump_command import MysqlDumpCommand
+from backup.mysqldump_command import MysqlDumpCommand, RestoreDatabaseCommand
 
 
 
@@ -15,10 +15,25 @@ def create_backup(**args):
         Returns the full path to the backup file or None if error.
     """
     
-    # Setup tbe command to call
+    # TODO: Externalize this path
     output_path = "/tmp/"
 
     cmd = MysqlDumpCommand()
     operation_result = cmd.execute(args.get('user'), args.get('password'), args.get('database'), output_path)
             
     return operation_result
+
+
+def restore_backup(**kwargs):
+    """
+    Restore a database from a given dump filename.
+    
+    Arguments:
+    filename (String) -- Short filename (without path) of the dump
+    database (String) -- Database name to restore
+    
+    """
+    
+    cmd = RestoreDatabaseCommand()
+    cmd_result = cmd.execute(**kwargs)
+    return cmd_result
