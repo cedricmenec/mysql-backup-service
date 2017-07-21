@@ -5,7 +5,7 @@ from backup.mysqldump_command import MysqlDumpCommand, MysqlDumpCommandResult
 def test_build_command_args_missing_all_args():
     cmd = MysqlDumpCommand()
     
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         cmd.build_command_args()
 
         
@@ -20,7 +20,7 @@ def test_build_command_args_missing_required_args():
     }
     
     with pytest.raises(ValueError):
-        cmd.build_command_args(**args)
+        cmd.build_command_args(args)
 
 
 def test_build_command_args():
@@ -34,7 +34,7 @@ def test_build_command_args():
         "database": "database"
     }
     
-    cmd_args = cmd.build_command_args(**args)
+    cmd_args = cmd.build_command_args(args)
     assert len(cmd_args) == 7
     assert cmd_args[6] == "database"
     
