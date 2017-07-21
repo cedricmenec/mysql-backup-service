@@ -1,5 +1,5 @@
 import pytest
-from backup.mysqldump_command import MysqlDumpCommand, MysqlDumpOperationResult
+from backup.mysqldump_command import MysqlDumpCommand, MysqlDumpCommandResult
 
 
 def test_build_command_args_missing_all_args():
